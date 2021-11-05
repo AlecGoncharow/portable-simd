@@ -18,6 +18,7 @@ macro_rules! impl_float_vector {
             #[must_use = "method returns a new vector and does not mutate the original value"]
             pub fn to_bits(self) -> Simd<$bits_ty, LANES> {
                 assert_eq!(core::mem::size_of::<Self>(), core::mem::size_of::<Simd<$bits_ty, LANES>>());
+                // Safety: transmuting vectors is safe
                 unsafe { core::mem::transmute_copy(&self) }
             }
 
@@ -27,6 +28,7 @@ macro_rules! impl_float_vector {
             #[must_use = "method returns a new vector and does not mutate the original value"]
             pub fn from_bits(bits: Simd<$bits_ty, LANES>) -> Self {
                 assert_eq!(core::mem::size_of::<Self>(), core::mem::size_of::<Simd<$bits_ty, LANES>>());
+                // Safety: transmuting vectors is safe
                 unsafe { core::mem::transmute_copy(&bits) }
             }
 
@@ -35,6 +37,7 @@ macro_rules! impl_float_vector {
             #[inline]
             #[must_use = "method returns a new vector and does not mutate the original value"]
             pub fn abs(self) -> Self {
+                // Safety: `self` is a float vector
                 unsafe { intrinsics::simd_fabs(self) }
             }
 
@@ -49,6 +52,7 @@ macro_rules! impl_float_vector {
             #[inline]
             #[must_use = "method returns a new vector and does not mutate the original value"]
             pub fn mul_add(self, a: Self, b: Self) -> Self {
+                // Safety: `self` is a float vector
                 unsafe { intrinsics::simd_fma(self, a, b) }
             }
 
@@ -58,6 +62,7 @@ macro_rules! impl_float_vector {
             #[must_use = "method returns a new vector and does not mutate the original value"]
             #[cfg(feature = "std")]
             pub fn sqrt(self) -> Self {
+                // Safety: `self` is a float vector
                 unsafe { intrinsics::simd_fsqrt(self) }
             }
 

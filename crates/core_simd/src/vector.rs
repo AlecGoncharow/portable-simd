@@ -145,7 +145,7 @@ where
         or: Self,
     ) -> Self {
         let enable: Mask<isize, LANES> = enable & idxs.lanes_lt(Simd::splat(slice.len()));
-        // SAFETY: We have masked-off out-of-bounds lanes.
+        // Safety: We have masked-off out-of-bounds lanes.
         unsafe { Self::gather_select_unchecked(slice, enable, idxs, or) }
     }
 
@@ -186,7 +186,7 @@ where
         let base_ptr = crate::simd::ptr::SimdConstPtr::splat(slice.as_ptr());
         // Ferris forgive me, I have done pointer arithmetic here.
         let ptrs = base_ptr.wrapping_add(idxs);
-        // SAFETY: The ptrs have been bounds-masked to prevent memory-unsafe reads insha'allah
+        // Safety: The ptrs have been bounds-masked to prevent memory-unsafe reads insha'allah
         unsafe { intrinsics::simd_gather(or, ptrs, enable.to_int()) }
     }
 
@@ -238,7 +238,7 @@ where
         idxs: Simd<usize, LANES>,
     ) {
         let enable: Mask<isize, LANES> = enable & idxs.lanes_lt(Simd::splat(slice.len()));
-        // SAFETY: We have masked-off out-of-bounds lanes.
+        // Safety: We have masked-off out-of-bounds lanes.
         unsafe { self.scatter_select_unchecked(slice, enable, idxs) }
     }
 
@@ -277,7 +277,7 @@ where
         enable: Mask<isize, LANES>,
         idxs: Simd<usize, LANES>,
     ) {
-        // SAFETY: This block works with *mut T derived from &mut 'a [T],
+        // Safety: This block works with *mut T derived from &mut 'a [T],
         // which means it is delicate in Rust's borrowing model, circa 2021:
         // &mut 'a [T] asserts uniqueness, so deriving &'a [T] invalidates live *mut Ts!
         // Even though this block is largely safe methods, it must be exactly this way
@@ -457,7 +457,9 @@ mod sealed {
 use sealed::Sealed;
 
 /// Marker trait for types that may be used as SIMD vector elements.
-/// SAFETY: This trait, when implemented, asserts the compiler can monomorphize
+///
+/// # Safety
+/// This trait, when implemented, asserts the compiler can monomorphize
 /// `#[repr(simd)]` structs with the marked type as an element.
 /// Strictly, it is valid to impl if the vector will not be miscompiled.
 /// Practically, it is user-unfriendly to impl it if the vector won't compile,

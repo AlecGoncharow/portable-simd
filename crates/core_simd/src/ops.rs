@@ -112,6 +112,7 @@ macro_rules! impl_op {
 
                 #[inline]
                 fn $trait_fn(self, rhs: Self) -> Self::Output {
+                    // Safety: `self` is a vector
                     unsafe {
                         intrinsics::$intrinsic(self, rhs)
                     }
@@ -169,6 +170,8 @@ macro_rules! impl_unsigned_int_ops {
                                 .any(|(x,y)| *x == <$scalar>::MIN && *y == -1 as _) {
                             panic!("attempt to divide with overflow");
                         }
+                        // Safety: `self` is a vector, and the lanes have been checked for
+                        // division by zero and overflow
                         unsafe { intrinsics::simd_div(self, rhs) }
                     }
                 }
@@ -198,6 +201,8 @@ macro_rules! impl_unsigned_int_ops {
                                 .any(|(x,y)| *x == <$scalar>::MIN && *y == -1 as _) {
                             panic!("attempt to calculate the remainder with overflow");
                         }
+                        // Safety: `self` is a vector, and the lanes have been checked for
+                        // division by zero and overflow
                         unsafe { intrinsics::simd_rem(self, rhs) }
                     }
                 }
@@ -221,6 +226,8 @@ macro_rules! impl_unsigned_int_ops {
                         {
                             panic!("attempt to shift left with overflow");
                         }
+                        // Safety: `self` is a vector, and the shift argument has been checked for
+                        // overflow
                         unsafe { intrinsics::simd_shl(self, rhs) }
                     }
                 }
@@ -243,6 +250,8 @@ macro_rules! impl_unsigned_int_ops {
                         {
                             panic!("attempt to shift with overflow");
                         }
+                        // Safety: `self` is a vector, and the shift argument has been checked for
+                        // overflow
                         unsafe { intrinsics::simd_shr(self, rhs) }
                     }
                 }
